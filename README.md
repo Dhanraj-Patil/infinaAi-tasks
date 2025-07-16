@@ -4,7 +4,7 @@ This repository contains solutions to two technical problems as part of the Infi
 
 ---
 
-## 📁 `problem-2-parallel-audio-separation/`
+## 📁 `task-2/`
 
 ### 🎯 Problem 2 – Parallel Audio Stream Separation (Browser)
 
