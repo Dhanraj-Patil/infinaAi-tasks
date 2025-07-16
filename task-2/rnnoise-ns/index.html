@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>RNNoise AudioWorklet (3s Delay)</title>
+</head>
+
+<body>
+    <h2>🎙️ RNNoise AudioWorklet with 3s Delay</h2>
+    <button id="startBtn">Start Mic</button>
+    <button id="stopBtn">Stop Mic</button>
+    <button id="toggleBtn">Toggle Suppression: OFF</button>
+
+    <script type="module">
+        let audioCtx, micStream, rnnoiseNode;
+        let suppression = false;
+
+        document.getElementById('startBtn').onclick = async () => {
+            if (audioCtx) return;
+
+            audioCtx = new AudioContext();
+            await audioCtx.audioWorklet.addModule('rnnoise-processor.js');
+
+            rnnoiseNode = new AudioWorkletNode(audioCtx, 'rnnoise-processor');
+            // rnnoiseNode.port.postMessage({
+            //     type: 'toggle',
+            //     suppression: suppression,
+            // });
+
+            micStream = await navigator.mediaDevices.getUserMedia({ audio: {
+                echoCancellation: true,
+                autoGainControl: true
+            } });
+            const micSource = audioCtx.createMediaStreamSource(micStream);
+
+            if(suppression){
+                micSource.connect(rnnoiseNode);
+                rnnoiseNode.connect(audioCtx.destination);
+            }
+            
+            if(!suppression){
+                micSource.connect(audioCtx.destination)
+            }
+           
+        };
+
+        document.getElementById('stopBtn').onclick = () => {
+            if (rnnoiseNode) rnnoiseNode.disconnect();
+            if (audioCtx) audioCtx.close();
+            if (micStream) micStream.getTracks().forEach(track => track.stop());
+
+            audioCtx = null;
+            rnnoiseNode = null;
+            micStream = null;
+        };
+
+        document.getElementById('toggleBtn').onclick = () => {
+            suppression = !suppression;
+            document.getElementById('toggleBtn').textContent = `Toggle Suppression: ${suppression ? 'ON' : 'OFF'}`;
+            if (rnnoiseNode) {
+                rnnoiseNode.port.postMessage({ type: 'toggle', suppression });
+            }
+        };
+    </script>
+</body>
+
+</html>
