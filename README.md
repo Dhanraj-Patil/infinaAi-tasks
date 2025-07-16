@@ -1,6 +1,8 @@
 # Infina AI Task Submission
 
-This repository contains solutions to two technical problems as part of the Infina AI tasks.
+This repository contains solutions to two of the three technical problems as part of the Infina AI tasks.
+
+⚠️ The third task (macOS-specific) could not be completed as I use a Windows machine and do not have access to a Mac required for that environment.
 
 ---
 
